@@ -28,7 +28,13 @@ $('#ftr').innerHTML='<div class="ftr"><p>SRMhub is a parody site made for fun by
 $('#sf').onsubmit=e=>{e.preventDefault();location.href='index.html?q='+encodeURIComponent($('#q').value)};
 
 const thumb=v=>v.thumb?'<img src="'+esc(v.thumb)+'" alt="">':v.youtube?'<img src="https://i.ytimg.com/vi/'+encodeURIComponent(v.youtube)+'/hqdefault.jpg" alt="">':'<div class="ph" style="background:linear-gradient(135deg,hsl('+hue(v.id)+' 60% 25%),hsl('+((hue(v.id)+60)%360)+' 70% 12%))">'+(EM[v.category]||'🎞️')+'</div>';
-const card=v=>'<a class="card" href="video.html?v='+encodeURIComponent(v.id)+'"><div class="th">'+thumb(v)+'<span class="dur">'+esc(v.duration)+'</span></div><div><div class="ct">'+esc(v.title)+'</div><div class="cu">@'+esc(v.uploader)+' <i class="vf">✔</i></div><div class="cs">👁 '+fmt(v.views)+' · '+esc(v.date)+'</div></div></a>';
+const card=v=>'<a class="card"'+(v.youtube?' data-yt="'+esc(v.youtube)+'"':'')+' href="video.html?v='+encodeURIComponent(v.id)+'"><div class="th">'+thumb(v)+'<span class="dur">'+esc(v.duration)+'</span></div><div><div class="ct">'+esc(v.title)+'</div><div class="cu">@'+esc(v.uploader)+' <i class="vf">✔</i></div><div class="cs">👁 '+fmt(v.views)+' · '+esc(v.date)+'</div></div></a>';
+
+// hover preview: cycle 3 YouTube frames
+document.addEventListener('mouseover',e=>{const c=e.target.closest('.card[data-yt]');if(!c||c.contains(e.relatedTarget))return;const img=c.querySelector('.th img');if(!img)return;
+  const f=[1,2,3].map(n=>'https://i.ytimg.com/vi/'+encodeURIComponent(c.dataset.yt)+'/hq'+n+'.jpg');f.forEach(u=>{new Image().src=u});
+  c._o=c._o||img.src;let i=0;img.src=f[0];c._t=setInterval(()=>{i++;img.src=f[i%3]},700)});
+document.addEventListener('mouseout',e=>{const c=e.target.closest('.card[data-yt]');if(!c||c.contains(e.relatedTarget))return;clearInterval(c._t);const img=c.querySelector('.th img');if(img&&c._o)img.src=c._o});
 const load=()=>fetch(C.manifest).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>{location.replace('404.html?reason=manifest');return new Promise(()=>{})});
 const follow=(b,u)=>{const set=()=>{const f=ls.get('srm_f',[]).includes(u);b.textContent=f?'✔ Following':'+ Follow';b.classList.toggle('on',f)};b.onclick=()=>{let f=ls.get('srm_f',[]);f=f.includes(u)?f.filter(x=>x!==u):f.concat(u);ls.set('srm_f',f);set()};set()};
 
