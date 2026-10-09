@@ -27,7 +27,7 @@ $('#hdr').innerHTML='<header class="top"><div class="bar"><a class="logo" href="
 $('#ftr').innerHTML='<div class="ftr"><p>SRMhub is a parody site made for fun by friends. Not affiliated with any real website. Travel vlogs and college memories only.</p></div>';
 $('#sf').onsubmit=e=>{e.preventDefault();location.href='index.html?q='+encodeURIComponent($('#q').value)};
 
-const thumb=v=>v.thumb?'<img src="'+esc(v.thumb)+'" alt="">':'<div class="ph" style="background:linear-gradient(135deg,hsl('+hue(v.id)+' 60% 25%),hsl('+((hue(v.id)+60)%360)+' 70% 12%))">'+(EM[v.category]||'🎞️')+'</div>';
+const thumb=v=>v.thumb?'<img src="'+esc(v.thumb)+'" alt="">':v.youtube?'<img src="https://i.ytimg.com/vi/'+encodeURIComponent(v.youtube)+'/hqdefault.jpg" alt="">':'<div class="ph" style="background:linear-gradient(135deg,hsl('+hue(v.id)+' 60% 25%),hsl('+((hue(v.id)+60)%360)+' 70% 12%))">'+(EM[v.category]||'🎞️')+'</div>';
 const card=v=>'<a class="card" href="video.html?v='+encodeURIComponent(v.id)+'"><div class="th">'+thumb(v)+'<span class="dur">'+esc(v.duration)+'</span></div><div><div class="ct">'+esc(v.title)+'</div><div class="cu">@'+esc(v.uploader)+' <i class="vf">✔</i></div><div class="cs">👁 '+fmt(v.views)+' · '+esc(v.date)+'</div></div></a>';
 const load=()=>fetch(C.manifest).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>{location.replace('404.html?reason=manifest');return new Promise(()=>{})});
 const follow=(b,u)=>{const set=()=>{const f=ls.get('srm_f',[]).includes(u);b.textContent=f?'✔ Following':'+ Follow';b.classList.toggle('on',f)};b.onclick=()=>{let f=ls.get('srm_f',[]);f=f.includes(u)?f.filter(x=>x!==u):f.concat(u);ls.set('srm_f',f);set()};set()};
@@ -58,7 +58,7 @@ if(P==='video')load().then(vs=>{
   if(!v){location.replace('404.html?v='+encodeURIComponent(id||''));return}
   document.title=v.title+' - SRMhub';
   const src=v.src?(/^https?:/.test(v.src)?v.src:C.videoBase+v.src):'';
-  $('#player').innerHTML=src?'<video controls playsinline preload="metadata" src="'+esc(src)+'"'+(v.thumb?' poster="'+esc(v.thumb)+'"':'')+'></video>':'<div class="nosrc">🎬<p>Video file not added yet</p></div>';
+  $('#player').innerHTML=v.youtube?'<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.youtube)+'?rel=0" title="'+esc(v.title)+'" allow="accelerometer; autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>':src?'<video controls playsinline preload="metadata" src="'+esc(src)+'"'+(v.thumb?' poster="'+esc(v.thumb)+'"':'')+'></video>':'<div class="nosrc">🎬<p>Video file not added yet</p></div>';
   $('#vt').textContent=v.title;
   $('#meta').textContent=fmt(v.views)+' Views  |  '+v.date+'  |  ✔ Verified Traveler';
   $('#ul').href='channel.html?u='+encodeURIComponent(v.uploader);
